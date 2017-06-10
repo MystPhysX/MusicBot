@@ -37,6 +37,8 @@ from .constants import DISCORD_MSG_CHAR_LIMIT, AUDIO_CACHE_PATH
 
 load_opus_lib()
 
+authorstatus = 0
+
 
 class SkipState:
     def __init__(self):
@@ -1798,6 +1800,27 @@ class MusicBot(discord.Client):
         return Response(":ok_hand:", delete_after=20)
 
 
+	@owner_only
+	async def cmd_setstatus(self, message):
+		"""
+        Usage:
+            {command_prefix}setstatus status
+
+        Sets the global status for the author
+        """
+		
+		if message.content.endswith('0')
+			global authorstatus = 0
+			
+		elif message.content.endswith('1')
+			global authorstatus = 1
+			
+		else:
+			raise exceptions.CommandError("You made the command, use it properly")
+			
+		return Response(":ok_hand:", delete_after=20)
+		
+	
     async def cmd_disconnect(self, server):
         await self.disconnect_voice_client(server)
         return Response(":hear_no_evil:", delete_after=20)
@@ -1816,8 +1839,11 @@ class MusicBot(discord.Client):
         await self.wait_until_ready()
 
         message_content = message.content.strip()
-        if not message_content.startswith(self.config.command_prefix):
-            return
+		if not message_content.startswith(self.config.command_prefix):
+			if (message.content.mentions(owner) and authorstatus == 0)
+				return Response("Sorry, Nightly is currently offline.")
+			else:
+				return
 
         if message.author == self.user:
             self.safe_print("Ignoring command from myself (%s)" % message.content)
@@ -1834,7 +1860,7 @@ class MusicBot(discord.Client):
             return
 
         if message.channel.is_private:
-            if not (message.author.id == self.config.owner_id and command == 'joinserver'):
+            if not (message.author.id == self.config.owner_id and command == 'joinserver' or command == 'setstatus'):
                 await self.send_message(message.channel, 'You cannot use this bot in private messages.')
                 return
 
